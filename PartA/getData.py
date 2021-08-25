@@ -25,7 +25,7 @@ def dataPlot(spamData):
     pl.show()
     
 # normalize numerical data 
-def normalizeData2(newArrayData,column):
+def normalizeData(newArrayData,column):
     minValue = np.min( newArrayData[:,column])
     maxValue = np.max( newArrayData[:,column])
     
@@ -34,7 +34,9 @@ def normalizeData2(newArrayData,column):
         return newArrayData
     else:
         newArrayData[:,column] = newArrayData[:,column]-minValue
-        newArrayData[:,column] = newArrayData[:,column]/average
+        newArrayData[:,column] = (newArrayData[:,column])/average
+        print(newArrayData[:,column])
+        # print(np.min(newArrayData[:,column]))
         return newArrayData
     
 def ShuffleDataRandomly(newArrayData):
@@ -98,22 +100,34 @@ def seperateData70vs30(df,percentageTesting):
     
 #-------------------------------------------------------main----------------------------------------------
 
-spamData = readFromFile(fileName)
-print(np.shape(spamData))
-nullData = np.where(spamData[:] == None)
-print(nullData)
-# dataPlot(spamData)
+def runGetData():
+    print("Read data from file")
+    spamData = readFromFile(fileName)
+    print(np.shape(spamData))
+    nullData = np.where(spamData[:] == None)
+    print(nullData)
+    # dataPlot(spamData)
+    
+    # newspamData,validData = BalanceSampling(spamData,3626)
+    
+    # print(np.shape(spamData))
+    
+    '''
+    Normalizing data
+    '''
+    print("Normalizing data max-min")
+    for column in range(np.shape(spamData)[1]):
+        spamData = normalizeData(spamData,column)
+    '''
+    Seperate data into test and training set. 
+    '''
+    print("Separate data  30% testing 70% training")
+    sizeTestData = round(((np.shape(spamData)[0])*0.3),0)
+    
+    testData, trainingData =seperateData70vs30(spamData,sizeTestData)
+    print("Test Data shape",np.shape(testData))
+    print("Training Data shape",np.shape(trainingData))
+    
+    return testData,trainingData
 
-newspamData,validData = BalanceSampling(spamData,3626)
-
-print(np.shape(newspamData))
-
-'''
-Seperate data into test and training set. 
-'''
-sizeTestData = (np.shape(newspamData)[0])*0.3
-
-testData, trainingData =seperateData70vs30(newspamData,sizeTestData)
-
-
-
+testData,trainingData = runGetData()

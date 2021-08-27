@@ -6,6 +6,7 @@ Created on 22/08/2021
 import numpy as np
 from _overlapped import NULL
 import pylab as pl
+import mlp
 
 fileName = "spambase.data"
 
@@ -35,7 +36,7 @@ def normalizeData(newArrayData,column):
     else:
         newArrayData[:,column] = newArrayData[:,column]-minValue
         newArrayData[:,column] = (newArrayData[:,column])/average
-        print(newArrayData[:,column])
+        # print(newArrayData[:,column])
         # print(np.min(newArrayData[:,column]))
         return newArrayData
     
@@ -70,28 +71,35 @@ def BalanceSampling(DataArray, sizeArrayData):
     DataArray = ShuffleDataRandomly(DataArray)
     numberYes = round(sizeArrayData *0.5) #Divide the data 50% maximum number yes values to be added to the array
     numberNo = round(sizeArrayData *0.5) #Divide the data 50% no
+    print("number Yes values",np.shape(np.where(DataArray[:,-1] == 1)))
+    print("number No values", np.shape(np.where(DataArray[:,-1] == 0)))
     
-    NewArrayData =[]
-
+    
+    Test =[]
+    Train =[]
 
     while(counter <= np.shape(DataArray)[0]): 
-        row = DataArray[:1]
-        # print(DataArray[:1])
-        valueYesOrNo = row[:,-1]  
-        if valueYesOrNo == 1 and yesCounter <= numberYes:
-            NewArrayData = AddtoArray(NewArrayData,row,counter)
-            DataArray = deleteRow(DataArray,0)
+        row = DataArray[counter-1:counter] # get the first row of randomly shuffled array
+        valueYesOrNo = row[:,-1] #get the last column containing output yes or no data  
+        if valueYesOrNo == 1 and yesCounter < numberYes:
+            Test = AddtoArray(Test,row,counter)
+            # DataArray = deleteRow(DataArray,0) # delete row from data set so that its not selected twice
             yesCounter+=1
-    
+            print("Yes: ", yesCounter, " Yes Counter: ", numberYes, "Counter", counter, "Special: ", np.shape(DataArray)[0], "Shape: ", np.shape(Test))
           
-        if valueYesOrNo == 0 and noCounter < numberNo:
-            NewArrayData = AddtoArray(NewArrayData,row,counter)
-            DataArray = deleteRow(DataArray,0)
+        elif valueYesOrNo == 0 and noCounter < numberNo:
+            Test = AddtoArray(Test,row,counter)    
+            # DataArray = deleteRow(DataArray,0)
             noCounter+=1
-         
+            print("No: ", noCounter, " No Counter: ", numberNo, "Counter", counter, "Special: ", np.shape(DataArray)[0], "Shape: ", np.shape(Test))
+        else:  
+             Train = AddtoArray(Train,row,counter)
+        
         counter+=1
         # print(DataArray[:1])
-    return  NewArrayData, DataArray
+    print("Done - Counter", counter, "Special: ", np.shape(DataArray)[0], "Shape: ", np.shape(Test))
+    print(np.shape(Test))
+    return  Test, Train
     
     # Separate training 70% from testing data  30%
 def seperateData70vs30(df,percentageTesting):
@@ -103,12 +111,17 @@ def seperateData70vs30(df,percentageTesting):
 def runGetData():
     print("Read data from file")
     spamData = readFromFile(fileName)
-    print(np.shape(spamData))
-    nullData = np.where(spamData[:] == None)
-    print(nullData)
+    newArray = np.array([])
+    
+    print("Datafrom file",spamData[:10])
+
+    print("number Yes values",np.shape(np.where(spamData[:,-1] == 1)))
+    print("number No values", np.shape(np.where(spamData[:,-1] == 0)))
+    # nullData = np.where(spamData[:] == None)
+    # print(nullData)
     # dataPlot(spamData)
     
-    # newspamData,validData = BalanceSampling(spamData,3626)
+    # spamData,validData = BalanceSampling(spamData,3626)
     
     # print(np.shape(spamData))
     
@@ -118,6 +131,10 @@ def runGetData():
     print("Normalizing data max-min")
     for column in range(np.shape(spamData)[1]):
         spamData = normalizeData(spamData,column)
+        
+    print("number Yes values",np.shape(np.where(spamData[:,-1] == 1)))
+    print("number No values", np.shape(np.where(spamData[:,-1] == 0)))
+    
     '''
     Seperate data into test and training set. 
     '''
@@ -127,7 +144,37 @@ def runGetData():
     testData, trainingData =seperateData70vs30(spamData,sizeTestData)
     print("Test Data shape",np.shape(testData))
     print("Training Data shape",np.shape(trainingData))
+    print("Training data",trainingData[:10])
+    print("Testing data",testData[:10])
+    
+    print("number Yes values test data",np.shape(np.where(testData[:,-1] == 1)))
+    print("number No values test Data", np.shape(np.where(testData[:,-1] == 0)))
+    print("number Yes values training data",np.shape(np.where(trainingData[:,-1] == 1)))
+    print("number No values training Data", np.shape(np.where(trainingData[:,-1] == 0)))
+    
     
     return testData,trainingData
 
-testData,trainingData = runGetData()
+def runMLP(trainingData,testData):
+    
+    train_in = trainingData[:,:58]
+    train_tgt = trainingData[:,57:58]
+    testing_in = testData[:,:58]
+    testing_tgt = testData[:,57:58]
+    
+    # print("Training data", train_in[:10])
+    # print("Testing data", testing_in[:10])
+    
+    for i in [5,10,15,20,25,30]:
+    
+        net = mlp.mlp(train_in,train_tgt,i,outtype = 'logistic')
+        
+        # net = mlp(train_in,traint_gt,i,outtype = 'linear')#different types of out puts: linear, logistic,softmax
+        error = net.mlptrain(train_in,train_tgt,0.1,100)
+        errorEarlyStoppingError = net.earlystopping(train_in,train_tgt,train_in,train_tgt,0.1)
+        percentageAccuracy = net.confmat(testing_in,testing_tgt)    
+             
+        
+
+# testData,trainingData = runGetData()
+# runMLP(trainingData,testData)

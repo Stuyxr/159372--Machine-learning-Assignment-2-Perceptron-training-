@@ -29,6 +29,8 @@ class mlp:
         # Initialise network
         self.weights1 = (np.random.rand(self.nin+1,self.nhidden)-0.5)*2/np.sqrt(self.nin)
         self.weights2 = (np.random.rand(self.nhidden+1,self.nout)-0.5)*2/np.sqrt(self.nhidden)
+        # print("weights1",self.weights1)
+        # print("weights2",self.weights2)
 
     def earlystopping(self,inputs,targets,valid,validtargets,eta,niterations=100):
     
@@ -41,14 +43,14 @@ class mlp:
         count = 0
         while (((old_val_error1 - new_val_error) > 0.001) or ((old_val_error2 - old_val_error1)>0.001)):
             count+=1
-            print(count)
+            # print(count)
             self.mlptrain(inputs,targets,eta,niterations)
             old_val_error2 = old_val_error1
             old_val_error1 = new_val_error
             validout = self.mlpfwd(valid)
             new_val_error = 0.5*np.sum((validtargets-validout)**2)
             
-        print("Stopped", new_val_error,old_val_error1, old_val_error2)
+        # print("Stopped", new_val_error,old_val_error1, old_val_error2)
         return new_val_error
     	
     def mlptrain(self,inputs,targets,eta,niterations):
@@ -65,8 +67,8 @@ class mlp:
             self.outputs = self.mlpfwd(inputs)
 
             error = 0.5*np.sum((self.outputs-targets)**2)
-            if (np.mod(n,100)==0):
-                print ("Iteration: ",n, " Error: ",error)
+            # if (np.mod(n,100)==0):
+                # print ("Train: Iteration: ",n, " Error: ",error)
 
             # Different types of output neurons
             if self.outtype == 'linear':
@@ -134,5 +136,5 @@ class mlp:
         percentageCorrect =  np.trace(cm)/np.sum(cm)*100      
         print("Confusion matrix is:")
         print(cm)
-        print("Percentage Correct: ",percentageCorrect)
+        print("Percentage Correct ----->: ",percentageCorrect)
         return percentageCorrect

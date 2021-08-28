@@ -14,7 +14,7 @@ testData,trainingData = getData.runGetData()
 def removecolumns(trainingData,chromosome):
     i = 0
     reducedTraining_in = np.array([])
-    for value in chromosome:
+    for value in chromosome:  #for each value in the chromosome that is 1, the column of training data set is included in a new array
         if value == 1:
             if((np.shape(reducedTraining_in)[0]) == 0):
                 reducedTraining_in = trainingData[:,i]
@@ -41,20 +41,19 @@ def chromosomeFitness(pop):
         # print('fitness test data',np.shape(trainingData))
         train_in = removecolumns(trainingData,chromosome) # array after removing columns according to chromosome
         # train_in = train_in*chromosome
-        print(np.shape(train_in))
+        # print(np.shape(train_in))
         
-        net = mlp.mlp(train_in,train_tgt,10,outtype = 'logistic')#different types of out puts: linear, logistic,softmax
+        net = mlp.mlp(train_in,train_tgt,10,outtype = 'linear')#different types of out puts: linear, logistic,softmax
         
-        error = net.mlptrain(train_in,train_tgt,0.1,101)
+        error = net.mlptrain(train_in,train_tgt,0.1,100)
        
-        # errorEarlyStoppingError = net.earlystopping(train_in,train_tgt,train_in,train_tgt,10)
+        errorEarlyStoppingError = net.earlystopping(train_in,train_tgt,train_in,train_tgt,0.25,2)
         
         percentageAccuracy = net.confmat(train_in,train_tgt)
-        print(np.dtype(percentageAccuracy))
         # percentageAccuracy = net.confmat(testing_in,testing_tgt) 
         numberColumns =  np.shape(train_in)[1]
         overAllScore = percentageAccuracy + ((57-numberColumns)/57)*100  # get the maximum score add percentage accuracy to the fraction of max amount of columns minus the number columns per genome
-         
+        # print("over all score",overAllScore)
         fitness[index] = overAllScore
         index +=1
     return fitness

@@ -75,13 +75,14 @@ class ga:
 			self.population = newPopulation
 			bestfit[i] = fitness.max()
 
-			if (np.mod(i,100)==0):
-				print (i, fitness.max())
+   # if (np.mod(i,100)==0):
+   # 	print (i, fitness.max())
 			#pl.plot([i],[fitness.max()],'r+')
-
+				
 		pl.plot(bestfit,'kx-')
 		pl.show()
-	
+		return(bestfit)
+		
 	def fps(self,population,fitness):
 
 		# Scale fitness by total fitness

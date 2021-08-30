@@ -11,6 +11,8 @@ import mlp
 fileName = "spambase.data"
 
 
+def initData():
+    return 0, ([])
 
 def readFromFile(fileName):
     spamDataFromFile = np.loadtxt(fileName,delimiter=',')
@@ -102,7 +104,7 @@ def BalanceSampling(DataArray, sizeArrayData):
     print(np.shape(Test))
     return  Test, Train
 
-def seperateData70vs30_2(df,percentageTesting):
+def seperateData(df,percentageTesting):
     percentageTesting = int(percentageTesting)
     print(percentageTesting)
     data = ShuffleDataRandomly(df)
@@ -131,7 +133,7 @@ def runGetData():
     # print(nullData)
     # dataPlot(spamData)
     
-    spamData,validData = BalanceSampling(spamData,500)
+    spamData,validData = BalanceSampling(spamData,1000)
     
     print("number Yes values",np.shape(np.where(spamData[:,-1] == 1)))
     print("number No values", np.shape(np.where(spamData[:,-1] == 0)))
@@ -155,10 +157,14 @@ def runGetData():
     '''
     print("Separate data  30% testing 70% training")
     sizeTestData = round(((np.shape(spamData)[0])*0.3),0)
-    
-    testData, trainingData =seperateData70vs30_2(spamData,sizeTestData)
+       
+    testData, trainingData =seperateData(spamData,sizeTestData)
     testData = ShuffleDataRandomly(testData)
     trainingData = ShuffleDataRandomly(trainingData)
+    
+    SizeValidationData = round(((np.shape(trainingData)[0])*0.25),0)
+    validation,trainingData = seperateData(trainingData,SizeValidationData)
+    validation = ShuffleDataRandomly(validation)
     # print("Test Data shape",np.shape(testData))
     # print("Training Data shape",np.shape(trainingData))
     # print("Training data",trainingData[:10])
@@ -170,7 +176,7 @@ def runGetData():
     # print("number No values training Data", np.shape(np.where(trainingData[:,-1] == 0)))
     
 
-    return testData,trainingData
+    return testData,trainingData,validation
 
 def runMLP(trainingData,testData):
     
@@ -178,6 +184,8 @@ def runMLP(trainingData,testData):
     train_tgt = trainingData[:,57:58]
     testing_in = testData[:,:58]
     testing_tgt = testData[:,57:58]
+
+    
     
     # print("Training data", train_in[:10])
     # print("Testing data", testing_in[:10])
@@ -185,11 +193,11 @@ def runMLP(trainingData,testData):
     # for i in [5,10,15,20,25,30,35,40,45,50]:
     for i in [2,5,10,15,20,25]:
     
-        net = mlp.mlp(train_in,train_tgt,i,outtype = 'logistic')
+        net = mlp.mlp(train_in,train_tgt,i,outtype = 'linear')
         
         # net = mlp(train_in,traint_gt,i,outtype = 'linear')#different types of out puts: linear, logistic,softmax
         error = net.mlptrain(train_in,train_tgt,0.01,5001)
-        # errorEarlyStoppingError = net.earlystopping(train_in,train_tgt,train_in,train_tgt,0.1,10)
+        errorEarlyStoppingError = net.earlystopping(train_in,train_tgt,validation_in,validation_tgt,0.1,10)
         percentageAccuracy = net.confmat(train_in,train_tgt)   
         percentageAccuracy = net.confmat(testing_in,testing_tgt)    
 

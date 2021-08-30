@@ -8,8 +8,13 @@ import numpy as np
 import mlp
 from scipy.special import expit
 
+#moo = 0
+higestScoring = 0.0
+higestScoringChomo = ([])
+#abc, abc2 = getData.initData()
+#higestScoring, higestScoringChomo = getData.initData()
+testData,trainingData,validation = getData.runGetData()
 
-testData,trainingData = getData.runGetData()
 
 def removecolumns(trainingData,chromosome):
     i = 0
@@ -24,6 +29,15 @@ def removecolumns(trainingData,chromosome):
         i+=1
     # print("removed colmn data", np.shape(reducedTraining_in))    
     return reducedTraining_in        
+
+# def getChromosomeWithHigestScore(overAllScore,chromosome):
+#
+#     #high = abc
+#     if overAllScore > higestScoring:
+#        higestScoring  = overAllScore
+#
+#        # higestScoringChomo = chromosome               
+    
     
 def chromosomeFitness(pop): 
     percentageAccuracy = 0
@@ -34,12 +48,15 @@ def chromosomeFitness(pop):
         train_tgt = trainingData[:,57:58]
         testing_in = testData[:,:-1]
         testing_tgt = testData[:,-1]
+        validation_in = validation[:,:58]
+        validation_tgt = validation[:,57:58]
         
         # print("Fitness Training data selected shape",np.shape(train_in))
         # print("Fitness Training data selected target shape",np.shape(train_tgt))
         # print('fitness test data',np.shape(testData))
         # print('fitness test data',np.shape(trainingData))
         train_in = removecolumns(trainingData,chromosome) # array after removing columns according to chromosome
+        validation_in = removecolumns(validation,chromosome)
         # train_in = train_in*chromosome
         # print(np.shape(train_in))
         
@@ -47,14 +64,15 @@ def chromosomeFitness(pop):
         
         error = net.mlptrain(train_in,train_tgt,0.1,100)
        
-        errorEarlyStoppingError = net.earlystopping(train_in,train_tgt,train_in,train_tgt,0.25,2)
+        errorEarlyStoppingError = net.earlystopping(train_in,train_tgt,validation_in,validation_tgt,0.25,2)
         
-        percentageAccuracy = net.confmat(train_in,train_tgt)
+        percentageAccuracy = net.confmat(validation_in,validation_tgt)
         # percentageAccuracy = net.confmat(testing_in,testing_tgt) 
         numberColumns =  np.shape(train_in)[1]
         overAllScore = percentageAccuracy + ((57-numberColumns)/57)*100  # get the maximum score add percentage accuracy to the fraction of max amount of columns minus the number columns per genome
         # print("over all score",overAllScore)
         fitness[index] = overAllScore
+        # getChromosomeWithHigestScore(overAllScore,chromosome)
         index +=1
     return fitness
         

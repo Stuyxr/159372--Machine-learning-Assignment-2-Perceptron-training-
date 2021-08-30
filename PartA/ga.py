@@ -49,13 +49,27 @@ class ga:
   # pl.ion()
 		#plotfig = pl.figure()
 		bestfit = np.zeros(self.nEpochs)
-
+		maxScoreFit = 0
+		bestFitScore = 0
+       
 		for i in range(self.nEpochs):
 			# Compute fitness of the population
 			fitness = eval(self.fitnessFunction)(self.population)
 			fitness = fitness.astype('float')
-
+			
+			#===================================================================
+			bestFitScore = np.argsort(fitness)
+			print(fitness.max())
+			if (fitness.max() > maxScoreFit):
+				bestCromomo = np.squeeze(self.population[bestFitScore[-1:],:])
+				maxScoreFit = fitness.max()
+		   # max_index_row = int(np.argmax(fitness, axis=0))
+   		   # bestChromo[i] = self.population[max_index_row,:]
+			
 			# Pick parents -- can do in order since they are randomised
+			
+			#=================================================================
+			
 			newPopulation = self.fps(self.population,fitness)
 
 			# Apply the genetic operators
@@ -78,10 +92,10 @@ class ga:
    # if (np.mod(i,100)==0):
    # 	print (i, fitness.max())
 			#pl.plot([i],[fitness.max()],'r+')
-				
+			
 		pl.plot(bestfit,'kx-')
 		pl.show()
-		return(bestfit)
+		return(bestCromomo)
 		
 	def fps(self,population,fitness):
 
@@ -140,6 +154,7 @@ class ga:
 		whereMutate = np.random.rand(np.shape(population)[0],np.shape(population)[1])
 		population[np.where(whereMutate < self.mutationProb)] = 1 - population[np.where(whereMutate < self.mutationProb)]
 		return population
+	
 
 	def elitism(self,oldPopulation,population,fitness):
 		best = np.argsort(fitness)

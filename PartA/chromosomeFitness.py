@@ -30,31 +30,19 @@ def removecolumns(trainingData,chromosome):
     # print("removed colmn data", np.shape(reducedTraining_in))    
     return reducedTraining_in        
 
-# def getChromosomeWithHigestScore(overAllScore,chromosome):
-#
-#     #high = abc
-#     if overAllScore > higestScoring:
-#        higestScoring  = overAllScore
-#
-#        # higestScoringChomo = chromosome               
+       
     
-    
+'''
+The function receive data sets from GA that is used to determine the scores of the chromosomes. 
+scores are determined by obtaining the cross validation accuracy and adding 
+fraction of max amount of columns minus the number columns per genome. 
+'''    
 def chromosomeFitness(pop,trainingData,train_tgt,validation,validation_tgt): 
     percentageAccuracy = 0
     fitness = np.zeros(np.shape(pop)[0]) 
     index =0
     for chromosome in pop:
-        # train_in = trainingData[:,:-1]
-        # train_tgt = trainingData[:,57:58]
-        # testing_in = testData[:,:-1]
-        # testing_tgt = testData[:,-1]
-        # validation_in = validation[:,:58]
-        # validation_tgt = validation[:,57:58]
-        
-        # print("Fitness Training data selected shape",np.shape(train_in))
-        # print("Fitness Training data selected target shape",np.shape(train_tgt))
-        # print('fitness test data',np.shape(testData))
-        # print('fitness test data',np.shape(trainingData))
+    
         train_in = removecolumns(trainingData,chromosome) # array after removing columns according to chromosome
         validation_in = removecolumns(validation,chromosome)
         # train_in = train_in*chromosome
@@ -72,7 +60,7 @@ def chromosomeFitness(pop,trainingData,train_tgt,validation,validation_tgt):
         overAllScore = percentageAccuracy + ((57-numberColumns)/57)*100  # get the maximum score add percentage accuracy to the fraction of max amount of columns minus the number columns per genome
         # print("over all score",overAllScore)
         fitness[index] = overAllScore
-        # getChromosomeWithHigestScore(overAllScore,chromosome)
+
         index +=1
     return fitness
         

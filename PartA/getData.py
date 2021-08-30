@@ -108,12 +108,10 @@ def seperateData(df,percentageTesting):
     percentageTesting = int(percentageTesting)
     print(percentageTesting)
     data = ShuffleDataRandomly(df)
-    unBalancedTestingdata = data[:percentageTesting,:]
-    unBalanceTrainingData = data[percentageTesting+1:,:]
-    print("===================> training data shape",np.shape(unBalanceTrainingData))
-    print("-------------------> testing data shape",np.shape(unBalancedTestingdata))
+    BalancedTestingdata = data[:percentageTesting,:]
+    BalanceTrainingData = data[percentageTesting+1:,:]
     
-    return unBalancedTestingdata, unBalanceTrainingData 
+    return BalancedTestingdata, BalanceTrainingData 
     
     # Separate training 70% from testing data  30%
 def seperateData70vs30(df,percentageTesting):
@@ -121,7 +119,10 @@ def seperateData70vs30(df,percentageTesting):
     return testData, trainingData 
     
 #-------------------------------------------------------main----------------------------------------------
-
+'''
+this function obtain all the data from the data file.
+Data is balanced, Normalized using max-min normalization and seperated into training,testing and validation data
+'''
 def runGetData():
     print("Read data from file")
     spamData = readFromFile(fileName)
@@ -177,16 +178,16 @@ def runGetData():
     
 
     return testData,trainingData,validation
-
+'''
+function used to test output of MLP without GA 
+'''
 def runMLP(trainingData,testData):
     
     train_in = trainingData[:,:58]
     train_tgt = trainingData[:,57:58]
     testing_in = testData[:,:58]
     testing_tgt = testData[:,57:58]
-
-    
-    
+   
     # print("Training data", train_in[:10])
     # print("Testing data", testing_in[:10])
     
@@ -201,16 +202,6 @@ def runMLP(trainingData,testData):
         percentageAccuracy = net.confmat(train_in,train_tgt)   
         percentageAccuracy = net.confmat(testing_in,testing_tgt)    
 
-def testMLP():
-    anddata = np.array([[0,0,0],[0,1,0],[1,0,0],[1,1,1]])
-    xordata = np.array([[0,0,0],[0,1,1],[1,0,1],[1,1,0]])
-    p = mlp.mlp(anddata[:,0:2],anddata[:,2:3],2)
-    p.mlptrain(anddata[:,0:2],anddata[:,2:3],0.25,1001)
-    p.confmat(anddata[:,0:2],anddata[:,2:3])
-    q = mlp.mlp(xordata[:,0:2],xordata[:,2:3],2)
-    q.mlptrain(xordata[:,0:2],xordata[:,2:3],0.25,5001)
-    q.confmat(xordata[:,0:2],xordata[:,2:3])
-         
         
 # testMLP()
 # testData,trainingData = runGetData()

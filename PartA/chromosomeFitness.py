@@ -13,7 +13,7 @@ higestScoring = 0.0
 higestScoringChomo = ([])
 #abc, abc2 = getData.initData()
 #higestScoring, higestScoringChomo = getData.initData()
-testData,trainingData,validation = getData.runGetData()
+# testData,trainingData,validation = getData.runGetData()
 
 
 def removecolumns(trainingData,chromosome):
@@ -39,17 +39,17 @@ def removecolumns(trainingData,chromosome):
 #        # higestScoringChomo = chromosome               
     
     
-def chromosomeFitness(pop): 
+def chromosomeFitness(pop,trainingData,train_tgt,validation,validation_tgt): 
     percentageAccuracy = 0
     fitness = np.zeros(np.shape(pop)[0]) 
     index =0
     for chromosome in pop:
-        train_in = trainingData[:,:-1]
-        train_tgt = trainingData[:,57:58]
-        testing_in = testData[:,:-1]
-        testing_tgt = testData[:,-1]
-        validation_in = validation[:,:58]
-        validation_tgt = validation[:,57:58]
+        # train_in = trainingData[:,:-1]
+        # train_tgt = trainingData[:,57:58]
+        # testing_in = testData[:,:-1]
+        # testing_tgt = testData[:,-1]
+        # validation_in = validation[:,:58]
+        # validation_tgt = validation[:,57:58]
         
         # print("Fitness Training data selected shape",np.shape(train_in))
         # print("Fitness Training data selected target shape",np.shape(train_tgt))

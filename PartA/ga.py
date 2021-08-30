@@ -18,8 +18,14 @@ import chromosomeFitness as cF
 
 class ga:
 
-	def __init__(self,stringLength,fitnessFunction,nEpochs,populationSize=100,mutationProb=-1,crossover='sp',nElite=4,tournament=False): #crossover can also be un
+	def __init__(self,trainingIn,trainTGT,validIn,validTGT,stringLength,fitnessFunction,nEpochs,populationSize=100,mutationProb=-1,crossover='sp',nElite=4,tournament=False): #crossover can also be un
 		""" Constructor"""
+		# multi layer percepetron data to be used in fitness function 
+		self.train_in = trainingIn
+		self.train_tgt= trainTGT
+		self.validation_in = validIn
+		self.validation_tgt = validTGT
+		
 		self.stringLength = stringLength
 		
 		# Population size should be even
@@ -54,7 +60,7 @@ class ga:
        
 		for i in range(self.nEpochs):
 			# Compute fitness of the population
-			fitness = eval(self.fitnessFunction)(self.population)
+			fitness = eval(self.fitnessFunction)(self.population,self.train_in,self.train_tgt,self.validation_in,self.validation_tgt) # sending in training and validation data
 			fitness = fitness.astype('float')
 			
 			#===================================================================
@@ -166,7 +172,7 @@ class ga:
 		return population
 
 	def tournament(self,oldPopulation,population,fitness,fitnessFunction):
-		newFitness = eval(self.fitnessFunction)(population)
+		newFitness = eval(self.fitnessFunction)(self.population,self.train_in,self.train_tgt,self.validation_in,self.validation_tgt)
 		for i in range(0,np.shape(population)[0],2):
 			f = np.concatenate((fitness[i:i+2],newFitness[i:i+2]),axis=0)
 			#f = np.concatenate((fitness[i:i+2],newFitness[i:i+2]),axis=1)

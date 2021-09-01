@@ -5,7 +5,7 @@ Created on 22/08/2021
 '''
 from _overlapped import NULL
 
-import PartA.mlp as mlp
+import PartB.mlp as mlp
 import numpy as np
 import pylab as pl
 
@@ -198,12 +198,12 @@ def runMLP(trainingData,testData,validation):
     # for i in [5,10,15,20,25,30,35,40,45,50]:
     for i in [2,5,10,15,20,25]:
     
-        net = mlp.mlp(train_in,train_tgt,i,outtype = 'softmax')
+        net = mlp.mlp(train_in,train_tgt,i,outtype = 'linear')
         
         # net = mlp(train_in,traint_gt,i,outtype = 'linear')#different types of out puts: linear, logistic,softmax
         # error = net.mlptrain(train_in,train_tgt,0.1,5001)
-        errorEarlyStoppingError = net.earlystopping(train_in,train_tgt,validation_in,validation_tgt,0.1,10)
-        percentageAccuracy = net.confmat(train_in,train_tgt)   
+        errorEarlyStoppingError = net.earlystopping(train_in,train_tgt,validation_in,validation_tgt,0.1,5000)
+        percentageAccuracy = net.confmat(testing_in,testing_tgt)   
         # percentageAccuracy = net.confmat(testing_in,testing_tgt)    
 
         

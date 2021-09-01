@@ -3,11 +3,13 @@ Created on 22/08/2021
 
 @author: yolan
 '''
-import getData
-import numpy as np
-import mlp
+# import getData
 from scipy.special import expit
 
+import numpy as np
+
+
+import PartA.mlp as mlp
 #moo = 0
 higestScoring = 0.0
 higestScoringChomo = ([])
@@ -49,10 +51,8 @@ def chromosomeFitness(pop,trainingData,train_tgt,validation,validation_tgt):
         # print(np.shape(train_in))
         
         net = mlp.mlp(train_in,train_tgt,10,outtype = 'linear')#different types of out puts: linear, logistic,softmax
-        
-        error = net.mlptrain(train_in,train_tgt,0.1,100)
        
-        errorEarlyStoppingError = net.earlystopping(train_in,train_tgt,validation_in,validation_tgt,0.25,2)
+        errorEarlyStoppingError = net.earlystopping(train_in,train_tgt,validation_in,validation_tgt,0.1,10)
         
         percentageAccuracy = net.confmat(validation_in,validation_tgt)
         # percentageAccuracy = net.confmat(testing_in,testing_tgt) 

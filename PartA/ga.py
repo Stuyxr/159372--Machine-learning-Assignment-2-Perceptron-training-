@@ -12,9 +12,11 @@
 # The Genetic algorithm
 # Comment and uncomment fitness functions as appropriate (as an import and the fitnessFunction variable)
 import random
-import pylab as pl
+
+import PartA.chromosomeFitness as cF
 import numpy as np
-import chromosomeFitness as cF
+import pylab as pl
+
 
 class ga:
 

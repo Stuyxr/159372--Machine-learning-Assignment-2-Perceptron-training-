@@ -44,7 +44,7 @@ pl.plot(net.map[0,best[where]],net.map[1,best[where]],'gv',ms=30)
 pl.axis([-0.1,1.1,-0.1,1.1])
 pl.axis('off')
 
-pl.figure(3)
+pl.figure(2)
 
 print("next round")
 

@@ -136,7 +136,7 @@ def runGetData():
     # print(nullData)
     # dataPlot(spamData)
     
-    spamData,validData = BalanceSampling(spamData,1000)
+    spamData,validData = BalanceSampling(spamData,1002)
     
     print("number Yes values",np.shape(np.where(spamData[:,-1] == 1)))
     print("number No values", np.shape(np.where(spamData[:,-1] == 0)))

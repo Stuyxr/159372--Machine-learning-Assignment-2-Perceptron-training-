@@ -13,8 +13,6 @@ import pylab as pl
 fileName = "spambase.data"
 
 
-def initData():
-    return 0, ([])
 
 def readFromFile(fileName):
     spamDataFromFile = np.loadtxt(fileName,delimiter=',')
@@ -29,7 +27,7 @@ def dataPlot(spamData):
     
     pl.show()
     
-# normalize numerical data 
+# normalize numerical data using max min normalization
 def normalizeData(newArrayData,column):
     minValue = np.min( newArrayData[:,column])
     maxValue = np.max( newArrayData[:,column])
@@ -43,7 +41,8 @@ def normalizeData(newArrayData,column):
         # print(newArrayData[:,column])
         # print(np.min(newArrayData[:,column]))
         return newArrayData
-    
+
+# shuffle data to get a better representation of data with smaller dataset    
 def ShuffleDataRandomly(newArrayData):
     # target = newArrayData[:,-1]
     order = np.arange(np.shape(newArrayData)[0])
@@ -51,11 +50,7 @@ def ShuffleDataRandomly(newArrayData):
     newArrayData = newArrayData[order,:]
     return newArrayData
 
-# def getRandomRow(DataArray):
-#     DataArray = ShuffleDataRandomly(DataArray)
-#     row = DataArray[:1]
-#     return row
-
+# add  a row to a new array
 def AddtoArray(NewArrayData,row,row_n):
     if np.shape(NewArrayData)[0]== 0:
                 NewArrayData = row
@@ -67,7 +62,7 @@ def deleteRow(df,row):
     newData = np.delete(df,row, axis=0)
     return newData
 
-    # create a data set with a 1:1 ratio of yes and no values
+# create a data set with a 1:1 ratio of yes and no values
 def BalanceSampling(DataArray, sizeArrayData):
     yesCounter = 0 # count the number yes target values is in the newArrayData
     noCounter = 0 #count the number no target values is in the newArrayData
@@ -75,14 +70,8 @@ def BalanceSampling(DataArray, sizeArrayData):
     DataArray = ShuffleDataRandomly(DataArray)
     numberYes = round(sizeArrayData *0.5) #Divide the data 50% maximum number yes values to be added to the array
     numberNo = round(sizeArrayData *0.5) #Divide the data 50% no
-    # print("number Yes values",np.shape(np.where(DataArray[:,-1] == 1)))
-    # print("number No values", np.shape(np.where(DataArray[:,-1] == 0)))
-    #
-
-    
     Test =[]
     Train =[]
-
     while(counter <= np.shape(DataArray)[0]): 
         row = DataArray[counter-1:counter] # get the first row of randomly shuffled array
         valueYesOrNo = row[:,57:58] #get the last column containing output yes or no data  
@@ -98,32 +87,30 @@ def BalanceSampling(DataArray, sizeArrayData):
             noCounter+=1
             # print("No: ", noCounter, " No Counter: ", numberNo, "Counter", counter, "Special: ", np.shape(DataArray)[0], "Shape: ", np.shape(Test))
         else:  
-             Train = AddtoArray(Train,row,counter)
+            Train = AddtoArray(Train,row,counter)
         
         counter+=1
-        # print(DataArray[:1])
-    # print("Done - Counter", counter, "Special: ", np.shape(DataArray)[0], "Shape: ", np.shape(Test))
     print(np.shape(Test))
     return  Test, Train
 
+# seperate data without balancing
 def seperateData(df,percentageTesting):
     percentageTesting = int(percentageTesting)
-    print(percentageTesting)
     data = ShuffleDataRandomly(df)
     BalancedTestingdata = data[:percentageTesting,:]
     BalanceTrainingData = data[percentageTesting+1:,:]
     
     return BalancedTestingdata, BalanceTrainingData 
     
-    # Separate training 70% from testing data  30%
+# Separate training 70% from testing data  30%
 def seperateData70vs30(df,percentageTesting):
     testData, trainingData = BalanceSampling(df,percentageTesting)
     return testData, trainingData 
     
 #-------------------------------------------------------main----------------------------------------------
 '''
-this function obtain all the data from the data file.
-Data is balanced, Normalized using max-min normalization and seperated into training,testing and validation data
+This function obtain all the data from the data file.
+Data is balanced, Normalized using max-min normalization and separated into training,testing and validation data
 '''
 def runGetData():
     print("Read data from file")
@@ -180,6 +167,7 @@ def runGetData():
     
 
     return testData,trainingData,validation
+
 '''
 function used to test output of MLP without GA 
 '''

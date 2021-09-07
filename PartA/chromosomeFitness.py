@@ -10,12 +10,10 @@ import numpy as np
 
 
 import PartA.mlp as mlp
-#moo = 0
+
 higestScoring = 0.0
 higestScoringChomo = ([])
-#abc, abc2 = getData.initData()
-#higestScoring, higestScoringChomo = getData.initData()
-# testData,trainingData,validation = getData.runGetData()
+
 
 
 def removecolumns(trainingData,chromosome):
@@ -47,8 +45,6 @@ def chromosomeFitness(pop,trainingData,train_tgt,validation,validation_tgt):
     
         train_in = removecolumns(trainingData,chromosome) # array after removing columns according to chromosome
         validation_in = removecolumns(validation,chromosome)
-        # train_in = train_in*chromosome
-        # print(np.shape(train_in))
         
         net = mlp.mlp(train_in,train_tgt,10,outtype = 'linear')#different types of out puts: linear, logistic,softmax
        
@@ -58,7 +54,6 @@ def chromosomeFitness(pop,trainingData,train_tgt,validation,validation_tgt):
         # percentageAccuracy = net.confmat(testing_in,testing_tgt) 
         numberColumns =  np.shape(train_in)[1]
         overAllScore = percentageAccuracy + ((57-numberColumns)/57)*100  # get the maximum score add percentage accuracy to the fraction of max amount of columns minus the number columns per genome
-        # print("over all score",overAllScore)
         fitness[index] = overAllScore
 
         index +=1

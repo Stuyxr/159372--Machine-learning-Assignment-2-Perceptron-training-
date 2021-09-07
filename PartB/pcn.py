@@ -8,6 +8,8 @@
 # Stephen Marsland, 2008, 2014
 
 import numpy as np
+import pylab as pl
+
 
 class pcn:
     """ A basic Perceptron"""
@@ -31,7 +33,7 @@ class pcn:
         self.weights = np.random.rand(self.nIn+1,self.nOut)*0.1-0.05
         print("Weights shape", np.shape(self.weights))
 
-    def pcntrain(self,activations,inputs,targets,eta,nIterations):
+    def pcntrain(self,inputs,targets,eta,nIterations):
         """ Train the thing """    
         # Add the inputs that match the bias node
         inputs = np.concatenate((inputs,-np.ones((self.nData,1))),axis=1)
@@ -39,10 +41,9 @@ class pcn:
         change = range(self.nData)
 
         for n in range(nIterations):
-            self.activations = activations
-            # self.activations = self.pcnfwd(inputs);
+
+            self.activations = self.pcnfwd(inputs);
             self.weights -= eta*np.dot(np.transpose(inputs),self.activations-targets)
-            print("PCN activations====", np.shape(self.activations))
             # Randomise order of inputs
             #np.random.shuffle(change)
             #inputs = inputs[change,:]
@@ -54,8 +55,6 @@ class pcn:
         """ Run the network forward """
         # Compute activations
         activations =  np.dot(inputs,self.weights)
-        print("activations shape ========>", np.shape(activations))
-        print("PCN ACTIVATION!!!!!!!", activations)
         # Threshold the activations
         return np.where(activations>0,1,0)
 
@@ -82,7 +81,6 @@ class pcn:
         for i in range(nClasses):
             for j in range(nClasses):
                 cm[i,j] = np.sum(np.where(outputs==i,1,0)*np.where(targets==j,1,0))
-
         print(cm)
         print(np.trace(cm)/np.sum(cm))
         

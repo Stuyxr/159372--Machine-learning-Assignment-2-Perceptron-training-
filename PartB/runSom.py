@@ -9,6 +9,7 @@ import numpy as np
 import PartB.som as som
 import pylab as pl
 import PartB.pcn as pcn
+from matplotlib.pyplot import scatter
 if __name__ == '__main__':
     pass
 
@@ -47,8 +48,20 @@ def reduceSetData(train_inFull,testing_inFull,validation_inFull):
     validationReduced = removecolumns(validation_inFull)
     return trainingDataReduced,testDataReduced,validationReduced
 
-def determineBestNode():
-    pass
+'''
+Use best array to obtain pcn activation input.
+Obtain a array through matching each intput row through the best to the value of each neuron
+Each input row points to a output neuron through the best matrix.
+'''
+def getBestAtivation(best,activation):
+    bestActivation =  np.zeros(np.shape(best)[0],dtype=float)
+    count = 0
+    for i in best:
+        bestActivation[count] = activation[best[i]]
+        count +=1
+        
+    return(bestActivation)
+    
 
 def countoverlaps(traint,best):
     train_tgt = np.transpose(traint)
@@ -61,15 +74,43 @@ def countoverlaps(traint,best):
     doubles01 = np.in1d(nodes0,nodes1,assume_unique=True)
     
     return  len(nodes0[doubles01]) 
-   
+'''
+Test different sizes of output maps to get the percentage overlaps per size.
+'''  
+def runDifferentSizeMaps(train_in,traint,testing_in,testingt,validation_in,validation_tgt):
+    score = np.zeros((2,1))
+    count = 0
+    lowestScore = 1000
+    lowestX = 0
+    lowestY = 0
+    for x in [10]:
+    # for x in [2,3,4,5,6,7,8,9,10,11,12,13,14,15,20]:
+    #     for y in [2,3,4,5,6,7,8,9,10,11,12,13,14,15,20]:
+        for y in [10]:
+            best,activation =SomData(x,y,train_in,traint,testing_in,testingt,validation_in,validation_tgt)
+            NumberOverlapse = countoverlaps(traint,best)
+            score[count] = (NumberOverlapse/(x*y))*100
+            if score[count] < lowestScore:
+                lowestScore = score[count]
+                lowestX = x
+                lowestY = y
+            count +=1
+    print(score)
+    print("lowest score x",lowestX)
+    print("Lowest score y",lowestY)
+    print("lowest percentage overlaps", lowestScore)
+    # Pick the best
+    print("Best low score ====================>", np.argmin(score))
+    return best,activation
 
 
 def SomData(x,y,train_in,traint,testing_in,testingt,validation_in,validation_tgt):
-    
+    # train_tgt =traint
+    # testing_tgt = testing_in
     train_tgt = np.transpose(traint)
     testing_tgt = np.transpose(testingt)
     
-    net = som.som(x,y,train_in,usePCA=1)
+    net = som.som(x,y,train_in,usePCA=0)
     net.somtrain(train_in,100)
     
     # Store the best node for each training input
@@ -88,81 +129,55 @@ def SomData(x,y,train_in,traint,testing_in,testingt,validation_in,validation_tgt
     where = pl.where(train_tgt == 1)[1]
     pl.plot(net.map[0,bestTrain[where]],net.map[1,bestTrain[where]],'gv',ms=30)
     pl.axis([-0.1,1.1,-0.1,1.1])
-    pl.axis('off')
+    pl.axis('on')
     
-    # pl.figure(2)
-
-    # print("next round")
+    pl.figure(2)
+    
+    print("next round")
     #
     #  # Store the best node for each training input
-    # bestTest = np.zeros(np.shape(testing_in)[0],dtype=int)
-    # for i in range(np.shape(testing_in)[0]):
-    #     bestTest[i],activationTest = net.somfwd(testing_in[i,:])
-    #
+    bestTest = np.zeros(np.shape(testing_in)[0],dtype=int)
+    for i in range(np.shape(testing_in)[0]):
+         bestTest[i],activationTest = net.somfwd(testing_in[i,:])
+    
     # print(bestTest)
     # print("best shape 2 ", np.shape(bestTest))
     # # print("activation testing",activationTest)
-    # pl.plot(net.map[0,:],net.map[1,:],'k.',ms=15)
-    # where = pl.where(testing_tgt == 0)[1]
-    # pl.plot(net.map[0,bestTest[where]],net.map[1,bestTest[where]],'rs',ms=30)
-    # where = pl.where(testing_tgt == 1)[1]
-    # pl.plot(net.map[0,bestTest[where]],net.map[1,bestTest[where]],'gv',ms=30)
-    # pl.axis([-0.1,1.1,-0.1,1.1])
-    # pl.axis('off')
+    pl.plot(net.map[0,:],net.map[1,:],'k.',ms=15)
+    where = pl.where(testing_tgt == 0)[1]
+    pl.plot(net.map[0,bestTest[where]],net.map[1,bestTest[where]],'rs',ms=30,)
+    where = pl.where(testing_tgt == 1)[1]
+    pl.plot(net.map[0,bestTest[where]],net.map[1,bestTest[where]],'gv',ms=30)
+    pl.axis([-0.1,1.1,-0.1,1.1])
+    pl.axis('on')
     pl.show()
     # return(activationTrain,activationTest,bestTrain,bestTest)
     return(bestTrain,bestAtivation)
     
 '''
-Using full data set uncomment  below determine the best number of nodes
+Using full data set 
+uncomment  below determine the best number of nodes for full set of data
 
 '''
-# score = np.zeros((225,1))
-# count = 0
-# lowestScore = 1000
-# lowestX = 0
-# lowestY = 0
-# for x in [15]:
-# # for x in [2,3,4,5,6,7,8,9,10,11,12,13,14,15,20]:
-# #     for y in [2,3,4,5,6,7,8,9,10,11,12,13,14,15,20]:
-#     for y in [15]:
-#         best,activation =SomData(x,y,train_in,traint,testing_in,testingt,validation_in,validation_tgt)
-#         NumberOverlapse = countoverlaps(traint,best)
-#         score[count] = (NumberOverlapse/(x*y))*100
-#         if score[count] < lowestScore:
-#             lowestScore = score[count]
-#             lowestX = x
-#             lowestY = y
-#         count +=1
-# print(score)
-# print("lowest score x",lowestX)
-# print("Lowest score y",lowestY)
-# print("Lowest score", lowestScore)
-# # Pick the best
-# print("Best low score ====================>", np.argmin(score))
+# best,activation = runDifferentSizeMaps(train_in,traint,testing_in,testingt,validation_in,validation_tgt)
 
-
+#
 '''
 Using reduced feature data set to run the SOM on the chosen numbers of nodes for the map
 
 '''
+trainingDataReduced,testDataReduced,validationReduced = reduceSetData(train_in,testing_in,validation_in)
+best,activation = runDifferentSizeMaps(train_in,traint,testing_in,testingt,validation_in,validation_tgt)
 
-# trainingDataReduced,testDataReduced,validationReduced = reduceSetData(train_in,testing_in,validation_in)
-# # activationTrain,activationTest,bestTrain,bestTest = SomData(2,2,trainingDataReduced,traint,testDataReduced,testingt,validationReduced,validation_tgt)
-# bestTrain,activation = SomData(15,10,trainingDataReduced,traint,testDataReduced,testingt,validationReduced,validation_tgt)
 
-'''
-using SOM activation as input to perceptron  
-'''
-best,activation =SomData(20,20,train_in,traint,testing_in,testingt,validation_in,validation_tgt)
-print("Activation Training set ", np.shape(activation))
+activation = getBestAtivation(best,activation)
 
 # print("Activation Testing set ", np.shape(activationTest))
 # print("Activation Testing set ", activationTest)
 # print("training", np.shape(train_in), np.shape(traint))
 # print("testing", np.shape(testing_in), np.shape(testingt))
 activationTrans = activation.reshape(-1,1)
-p = pcn.pcn(train_in,traint)
-p.pcntrain(activationTrans,train_in,traint,0.1,1000)
-p.confmat(train_in,traint)
+p = pcn.pcn(activationTrans,traint)
+p.pcntrain(activationTrans,traint,0.1,1000)
+p.confmat(activationTrans,traint)
 print("------------------------------------------------Finished--------------------------------------------------")

@@ -15,7 +15,7 @@ import PartB.pca as pca
 class som:
 	"""A Basic 2D Self-Organising Map
 	The map connections can be initialised randomly or with PCA"""
-	def __init__(self,x,y,inputs,eta_b=0.3,eta_n=0.1,nSize=0.5,alpha=1,usePCA=1,useBCs=0,eta_bfinal=0.03,eta_nfinal=0.01,nSizefinal=0.05):
+	def __init__(self,x,y,inputs,eta_b=0.3,eta_n=0.1,nSize=1,alpha=1,usePCA=0,useBCs=0,eta_bfinal=0.03,eta_nfinal=0.01,nSizefinal=0.05):
 		self.nData = np.shape(inputs)[0]
 		self.nDim = np.shape(inputs)[1]
 		self.mapDim = 2

@@ -65,14 +65,15 @@ class ga:
 			fitness = eval(self.fitnessFunction)(self.population,self.train_in,self.train_tgt,self.validation_in,self.validation_tgt) # sending in training and validation data
 			fitness = fitness.astype('float')
 			
+			'''
+			This part of code gets the best chromosome and sends it back to GA to be used to obtain reduced feature testing data
+			'''
 			#===================================================================
 			bestFitScore = np.argsort(fitness)
 			print(fitness.max())
 			if (fitness.max() > maxScoreFit):
 				bestCromomo = np.squeeze(self.population[bestFitScore[-1:],:])
 				maxScoreFit = fitness.max()
-		   # max_index_row = int(np.argmax(fitness, axis=0))
-   		   # bestChromo[i] = self.population[max_index_row,:]
 			
 			# Pick parents -- can do in order since they are randomised
 			
@@ -103,7 +104,7 @@ class ga:
 			
 		pl.plot(bestfit,'kx-')
 		pl.show()
-		return(bestCromomo)
+		return(bestCromomo) # returning the best chromosome
 		
 	def fps(self,population,fitness):
 

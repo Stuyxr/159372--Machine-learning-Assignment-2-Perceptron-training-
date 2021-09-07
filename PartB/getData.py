@@ -13,8 +13,6 @@ import pylab as pl
 fileName = "spambase.data"
 
 
-def initData():
-    return 0, ([])
 
 def readFromFile(fileName):
     spamDataFromFile = np.loadtxt(fileName,delimiter=',')
@@ -77,7 +75,7 @@ def BalanceSampling(DataArray, sizeArrayData):
     numberNo = round(sizeArrayData *0.5) #Divide the data 50% no
     # print("number Yes values",np.shape(np.where(DataArray[:,-1] == 1)))
     # print("number No values", np.shape(np.where(DataArray[:,-1] == 0)))
-    #
+ 
 
     
     Test =[]

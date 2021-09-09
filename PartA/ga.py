@@ -74,6 +74,7 @@ class ga:
 			if (fitness.max() > maxScoreFit):
 				bestCromomo = np.squeeze(self.population[bestFitScore[-1:],:])
 				maxScoreFit = fitness.max()
+				
 			
 			# Pick parents -- can do in order since they are randomised
 			

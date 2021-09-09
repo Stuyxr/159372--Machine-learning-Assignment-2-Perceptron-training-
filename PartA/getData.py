@@ -18,14 +18,6 @@ def readFromFile(fileName):
     spamDataFromFile = np.loadtxt(fileName,delimiter=',')
     return spamDataFromFile
    
-
-def dataPlot(spamData):
-    spam = np.where(spamData[:,-1] ==1) 
-    ham = np.where(spamData[:,-1] ==0)
-    pl.plot(spamData[spam,1],'ro')
-    pl.plot(spamData[ham,1],'go')
-    
-    pl.show()
     
 # normalize numerical data using max min normalization
 def normalizeData(newArrayData,column):

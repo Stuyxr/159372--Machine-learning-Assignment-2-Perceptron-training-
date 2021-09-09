@@ -62,7 +62,9 @@ def getBestAtivation(best,activation):
         
     return(bestActivation)
     
-
+'''
+count the nuber of overlaps (outputs where both spam and ham occupies)
+'''
 def countoverlaps(traint,best):
     train_tgt = np.transpose(traint)
      # Find places where the same neuron represents different classes
@@ -74,6 +76,7 @@ def countoverlaps(traint,best):
     doubles01 = np.in1d(nodes0,nodes1,assume_unique=True)
     
     return  len(nodes0[doubles01]) 
+
 '''
 Test different sizes of output maps to get the percentage overlaps per size.
 '''  
@@ -86,10 +89,10 @@ def runDifferentSizeMaps(train_in,traint,testing_in,testingt,validation_in,valid
     for x in [10]:
     # for x in [2,3,4,5,6,7,8,9,10,11,12,13,14,15,20]:
     #     for y in [2,3,4,5,6,7,8,9,10,11,12,13,14,15,20]:
-        for y in [10]:
+        for y in [20]:
             best,activation =SomData(x,y,train_in,traint,testing_in,testingt,validation_in,validation_tgt)
             NumberOverlapse = countoverlaps(traint,best)
-            score[count] = (NumberOverlapse/(x*y))*100
+            score[count] = (NumberOverlapse/(x*y))*100 # get the percentage of overlaps for spam and ham per map 
             if score[count] < lowestScore:
                 lowestScore = score[count]
                 lowestX = x
@@ -131,7 +134,7 @@ def SomData(x,y,train_in,traint,testing_in,testingt,validation_in,validation_tgt
     pl.axis([-0.1,1.1,-0.1,1.1])
     pl.axis('on')
     
-    pl.figure(2)
+    pl.figure("Testing Data")
     
     print("next round")
     #
@@ -140,9 +143,6 @@ def SomData(x,y,train_in,traint,testing_in,testingt,validation_in,validation_tgt
     for i in range(np.shape(testing_in)[0]):
          bestTest[i],activationTest = net.somfwd(testing_in[i,:])
     
-    # print(bestTest)
-    # print("best shape 2 ", np.shape(bestTest))
-    # # print("activation testing",activationTest)
     pl.plot(net.map[0,:],net.map[1,:],'k.',ms=15)
     where = pl.where(testing_tgt == 0)[1]
     pl.plot(net.map[0,bestTest[where]],net.map[1,bestTest[where]],'rs',ms=30,)
@@ -161,21 +161,17 @@ uncomment  below determine the best number of nodes for full set of data
 '''
 # best,activation = runDifferentSizeMaps(train_in,traint,testing_in,testingt,validation_in,validation_tgt)
 
-#
+
 '''
 Using reduced feature data set to run the SOM on the chosen numbers of nodes for the map
 
 '''
 trainingDataReduced,testDataReduced,validationReduced = reduceSetData(train_in,testing_in,validation_in)
-best,activation = runDifferentSizeMaps(train_in,traint,testing_in,testingt,validation_in,validation_tgt)
+best,activation = runDifferentSizeMaps(trainingDataReduced,traint,testDataReduced,testingt,validationReduced,validation_tgt)
 
 
 activation = getBestAtivation(best,activation)
 
-# print("Activation Testing set ", np.shape(activationTest))
-# print("Activation Testing set ", activationTest)
-# print("training", np.shape(train_in), np.shape(traint))
-# print("testing", np.shape(testing_in), np.shape(testingt))
 activationTrans = activation.reshape(-1,1)
 p = pcn.pcn(activationTrans,traint)
 p.pcntrain(activationTrans,traint,0.1,1000)

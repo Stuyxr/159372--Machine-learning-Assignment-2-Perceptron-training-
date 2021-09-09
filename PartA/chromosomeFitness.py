@@ -29,8 +29,7 @@ def removecolumns(trainingData,chromosome):
         i+=1
     # print("removed colmn data", np.shape(reducedTraining_in))    
     return reducedTraining_in        
-
-       
+     
     
 '''
 The function receive data sets from GA that is used to determine the scores of the chromosomes. 
